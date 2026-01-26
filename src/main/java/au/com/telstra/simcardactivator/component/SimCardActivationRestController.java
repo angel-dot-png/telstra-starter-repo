@@ -24,7 +24,6 @@ public class SimCardActivationRestController {
     @PostMapping(value = "/activate")
     public void handleActivationRequest(@RequestBody SimCard simCard) {
         CheckActivation actuationResult = simCardActuationHandler.actuate(simCard);
-        System.out.println(actuationResult.getSuccess());
         databaseConduit.save(simCard, actuationResult);
     }
 
