@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import au.com.telstra.simcardactivator.Customer;
-import au.com.telstra.simcardactivator.CustomerRepository;
 import au.com.telstra.simcardactivator.foundation.CheckActivation;
 import au.com.telstra.simcardactivator.foundation.SimCard;
 
@@ -16,23 +14,22 @@ import au.com.telstra.simcardactivator.foundation.SimCard;
 public class SimCardActivationRestController {
 
     private final SimCardActuationHandler simCardActuationHandler;
-    private CustomerRepository repository;
+    private final DatabaseConduit databaseConduit;
 
-    public SimCardActivationRestController(SimCardActuationHandler simCardActuationHandler) {
+    public SimCardActivationRestController(DatabaseConduit databaseConduit, SimCardActuationHandler simCardActuationHandler) {
         this.simCardActuationHandler = simCardActuationHandler;
+        this.databaseConduit = databaseConduit;
     }
 
     @PostMapping(value = "/activate")
     public void handleActivationRequest(@RequestBody SimCard simCard) {
         CheckActivation actuationResult = simCardActuationHandler.actuate(simCard);
         System.out.println(actuationResult.getSuccess());
+        databaseConduit.save(simCard, actuationResult);
     }
 
-    @GetMapping("/get")
-    public Customer getCustomer(@RequestParam long simCardId) {
-        Customer customer = repository.findById(simCardId);
-        System.out.println(customer.toString());
-        return customer;
+    @GetMapping(value = "/query")
+    public SimCard handleActivationRequest(@RequestParam Long simCardId) {
+        return databaseConduit.querySimCard(simCardId);
     }
-
 }

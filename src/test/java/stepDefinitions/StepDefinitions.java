@@ -1,43 +1,49 @@
 package stepDefinitions;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootContextLoader;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import au.com.telstra.simcardactivator.foundation.CheckActivation;
+import org.springframework.test.context.ContextConfiguration;
+
+import au.com.telstra.simcardactivator.SimCardActivator;
+import au.com.telstra.simcardactivator.foundation.SimCard;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.spring.CucumberContextConfiguration;
 
+@CucumberContextConfiguration
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ContextConfiguration(classes = SimCardActivator.class, loader = SpringBootContextLoader.class)
 public class StepDefinitions {
     @Autowired
     private TestRestTemplate restTemplate;
-    private String iccid;
-    private CheckActivation check;
+    private SimCard simCard;
     
-    @Given("active ICCID to verify")
-    public void active_iccid_to_verify() {
-        iccid = "1255789453849037777";
+    @Given("good simcard")
+    public void good_simcard() {
+        simCard = new SimCard("1255789453849037777", "active@example.com", false);
     }
-    @When("check active iccid")
-    public void check_active_iccid(){
-        check = restTemplate.postForObject("http://localhost:8444/actuate", iccid, CheckActivation.class);
+    @When("request is sent to activate")
+    public void request_to_activate(){
+        this.restTemplate.postForObject("http://localhost:8080/activate", simCard, String.class);
     }
-    @Then("return true")
-    public void return_true() {
-        assertThat(check.getSuccess()).isEqualTo(true);
+    @Then("activate simcard and record state to database")
+    public void activate_and_record() {
+        simCard = this.restTemplate.getForObject("http://localhost:8080/query?simCardId={simCardId}", SimCard.class, 1);
+        assertTrue(simCard.getActive());
     }
-
-    @Given("inactive ICCID to verify")
-    public void inactive_iccid_to_verify() {
-        iccid = "8944500102198304826";
+    @Given("bad simcard")
+    public void bad_simcard() {
+        simCard = new SimCard("8944500102198304826", "off@example.com", false);
     }
-    @When("check inactive iccid")
-    public void check_inactive_iccid(){
-        check = restTemplate.postForObject("http://localhost:8444/actuate", iccid, CheckActivation.class);
-    }
-    @Then("return false")
-    public void return_false() {
-        assertThat(check.getSuccess()).isEqualTo(false);
+    @Then("fail to activate and record state to database")
+    public void fail_and_record() {
+        simCard = this.restTemplate.getForObject("http://localhost:8080/query?simCardId={simCardId}", SimCard.class, 2);
+        assertFalse(simCard.getActive());
     }
 
 }
