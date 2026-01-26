@@ -11,38 +11,32 @@ public class Customer {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String iccid;
-    private String customerEmail;
-    private boolean active;
+    private String firstName;
+    private String lastName;
 
     protected Customer() {}
 
-    public Customer(String iccid, String customerEmail, boolean active) {
-        this.iccid = iccid;
-        this.customerEmail = customerEmail;
-        this.active = active;
+    public Customer(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     
     @Override
     public String toString() {
         return String.format(
-                "Customer[id=%d, iccid='%s', customerEmail='%s', active=`%s`]",
-                id, iccid, customerEmail, active);
+                "Customer[id=%d, firstName='%s', lastName=`%s`]",
+                id, firstName, lastName);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getIccid() {
-        return iccid;
+    public String getfirstName() {
+        return firstName;
     }
 
-    public String getCustomerEmail() {
-        return customerEmail;
-    }
-
-    public boolean getActive() {
-        return active;
+    public String getlastName() {
+        return lastName;
     }
 }

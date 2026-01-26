@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import au.com.telstra.simcardactivator.Customer;
 import au.com.telstra.simcardactivator.CustomerRepository;
+import au.com.telstra.simcardactivator.foundation.CheckActivation;
 import au.com.telstra.simcardactivator.foundation.SimCard;
 
 
@@ -23,13 +24,13 @@ public class SimCardActivationRestController {
 
     @PostMapping(value = "/activate")
     public void handleActivationRequest(@RequestBody SimCard simCard) {
-        var actuationResult = simCardActuationHandler.actuate(simCard);
+        CheckActivation actuationResult = simCardActuationHandler.actuate(simCard);
         System.out.println(actuationResult.getSuccess());
     }
 
     @GetMapping("/get")
     public Customer getCustomer(@RequestParam long simCardId) {
-        Customer customer = repository.findBySimCardId(simCardId);
+        Customer customer = repository.findById(simCardId);
         System.out.println(customer.toString());
         return customer;
     }
