@@ -3,12 +3,12 @@ package au.com.telstra.simcardactivator.foundation;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-// public record CheckActivation(boolean success) { }
 
 public class CheckActivation {
     private boolean success;
     
     public CheckActivation(){
+        /* boilerplate */
     }
 
     public boolean getSuccess() {

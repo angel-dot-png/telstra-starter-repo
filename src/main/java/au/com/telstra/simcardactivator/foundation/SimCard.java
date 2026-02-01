@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import au.com.telstra.simcardactivator.record.SimCardRecord;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-// public record SimCard(String iccid, String customerEmail) { }
 public class SimCard{
     private String iccid;
     private String customerEmail;
@@ -14,9 +13,9 @@ public class SimCard{
     public SimCard() {
     }
 
-    public SimCard(String temp_iccid, String temp_customerEmail, boolean active) {
-        this.iccid = temp_iccid;
-        this.customerEmail = temp_customerEmail;
+    public SimCard(String iccid, String customerEmail, boolean active) {
+        this.iccid = iccid;
+        this.customerEmail = customerEmail;
         this.active = active;
     }
 
